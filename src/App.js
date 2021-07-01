@@ -1,5 +1,14 @@
+import React from 'react';
+import PublicationPage from './PublicationPage';
+import Header from './components/Header';
+
 const App = () => {
-  console.log('Hello world!');
+  return(
+    <div>
+      <Header />
+      <PublicationPage />
+    </div>
+  )
 };
 
 export default App;

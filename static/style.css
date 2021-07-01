@@ -40,3 +40,10 @@ body {
     padding: 2px 4px;
     border-radius: 3px;
 }
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-items: center;
+    align-items: center;
+}
