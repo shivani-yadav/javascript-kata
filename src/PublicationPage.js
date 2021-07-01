@@ -1,11 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PublicationRow from './components/PublicationRow';
-import SearchBar from './components/SearchBar';
 
-function PublicationPage(){
+import PublicationsDataService from './PublicationsDataService';
+
+let allPublications = []
+
+function PublicationPage() {
+  const [publications, setPublications] = useState([]);
+  const [searchText, setSearchText] = useState(''); 
+
+  const loadCSV = (response) => {
+    let reader = response.body.getReader();
+    let decoder = new TextDecoder('utf-8');
+
+    return reader.read().then(function (result) {
+      return decoder.decode(result.value);
+    });
+  }
+
+  const handleInputChange = (evt) => {
+    setSearchText(evt.target.value)
+    const searchValue = evt.target.value
+    const filteredPublications = allPublications.filter(publication => {
+      const authorsMatched = publication.authors.filter(author => author.email.search(searchValue)).length > -1;
+      const isbnMatched = publication.isbn.search(searchValue) > -1;
+      return authorsMatched || isbnMatched
+    })
+    setPublications(filteredPublications)
+  }
+
+  useEffect(() => {
+    Promise.all([
+      fetch('authors.csv'),
+      fetch('books.csv'),
+      fetch('magazines.csv')
+    ]).then(async ([authorsResponse, booksResponse, magazinesResponse]) => {
+      const authorsCSV = await loadCSV(authorsResponse)
+      const booksCSV = await loadCSV(booksResponse)
+      const magazinesCSV = await loadCSV(magazinesResponse)
+      const publicationsDataService = new PublicationsDataService();
+      const data = publicationsDataService.parse(authorsCSV, booksCSV, magazinesCSV);
+      allPublications = data
+      setPublications(allPublications)
+    });
+  }, [])
+
   return(
     <div>
-      <SearchBar />
+      <input type="text" value={searchText} onChange={handleInputChange} />
       <table>
         <tr>
           <th>Title</th>
@@ -15,7 +57,7 @@ function PublicationPage(){
         </tr>
       </table>
       {
-        [1, 2, 3].map(publication => <PublicationRow key={publication} publication={publication} />)
+        publications.map(publication => <PublicationRow key={publication} publication={publication} />)
       }
     </div>
   )

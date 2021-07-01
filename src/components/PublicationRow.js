@@ -1,12 +1,16 @@
 import React from 'react';
 
-function PublicationRow(){
+function PublicationRow({ publication }){
   return(
     <tr>
-      <td>Title</td>
-      <td>Isbn</td>
-      <td>Author Name</td>
-      <td>Author Email</td>
+      <td>{publication.title}</td>
+      <td>{publication.isbn}</td>
+      <td>
+        {publication.authors.map(author => {
+          return `${author.firstName} ${author.lastName} | ${author.email}`;
+        })
+        }
+      </td>
     </tr>
   )
 }
