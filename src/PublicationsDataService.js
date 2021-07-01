@@ -1,10 +1,23 @@
 class PublicationsDataService {
+  constructor() {
+    this.allPublications = []
+  }
+
+  search(text) {
+    const filteredPublications = this.allPublications.filter(publication => {
+      const authorsMatched = publication.authors.filter(author => author.email.search(text) > -1 ).length > 0;
+      const isbnMatched = publication.isbn.search(text) > -1;
+      return authorsMatched || isbnMatched
+    })
+    return filteredPublications;
+  }
+
   parse(authorsCSV, booksCSV, magazinesCSV) {
     const authorsObj = this.parseAuthors(authorsCSV)
     const books = this.parseBooks(booksCSV, authorsObj)
     const magazines = this.parseMagazines(magazinesCSV, authorsObj)
-    const publications = [...books, ...magazines].sort((a, b) => b.title > a.title)
-    return publications
+    this.allPublications = [...books, ...magazines].sort((a, b) => b.title > a.title)
+    return this.allPublications
   }
 
   parseAuthors(authorsCSV) {

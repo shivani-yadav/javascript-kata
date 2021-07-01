@@ -3,7 +3,7 @@ import PublicationRow from './components/PublicationRow';
 
 import PublicationsDataService from './PublicationsDataService';
 
-let allPublications = []
+const publicationsDataService = new PublicationsDataService();
 
 function PublicationPage() {
   const [publications, setPublications] = useState([]);
@@ -21,12 +21,7 @@ function PublicationPage() {
   const handleInputChange = (evt) => {
     const searchValue = evt.target.value
     setSearchText(searchValue)
-    const filteredPublications = allPublications.filter(publication => {
-      const authorsMatched = publication.authors.filter(author => author.email.search(searchValue) > -1 ).length > 0;
-      const isbnMatched = publication.isbn.search(searchValue) > -1;
-      return authorsMatched || isbnMatched
-    })
-    console.log(filteredPublications);
+    const filteredPublications = publicationsDataService.search(searchValue)
     setPublications(filteredPublications)
   }
 
@@ -39,10 +34,8 @@ function PublicationPage() {
       const authorsCSV = await loadCSV(authorsResponse)
       const booksCSV = await loadCSV(booksResponse)
       const magazinesCSV = await loadCSV(magazinesResponse)
-      const publicationsDataService = new PublicationsDataService();
       const data = publicationsDataService.parse(authorsCSV, booksCSV, magazinesCSV);
-      allPublications = data
-      setPublications(allPublications)
+      setPublications(data);
     });
   }, [])
 
