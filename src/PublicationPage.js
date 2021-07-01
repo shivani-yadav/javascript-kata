@@ -19,13 +19,14 @@ function PublicationPage() {
   }
 
   const handleInputChange = (evt) => {
-    setSearchText(evt.target.value)
     const searchValue = evt.target.value
+    setSearchText(searchValue)
     const filteredPublications = allPublications.filter(publication => {
-      const authorsMatched = publication.authors.filter(author => author.email.search(searchValue)).length > -1;
+      const authorsMatched = publication.authors.filter(author => author.email.search(searchValue) > -1 ).length > 0;
       const isbnMatched = publication.isbn.search(searchValue) > -1;
       return authorsMatched || isbnMatched
     })
+    console.log(filteredPublications);
     setPublications(filteredPublications)
   }
 
